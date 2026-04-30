@@ -11,6 +11,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Inclusion des routes
+app.include_router(users.router)
+
 # Configuration CORS pour WordPress
 app.add_middleware(
     CORSMiddleware,
