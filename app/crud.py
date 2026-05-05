@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 from sqlalchemy.orm import Session
 from . import models, schemas, auth
 import uuid
@@ -86,4 +84,3 @@ def promote_to_etudiant(db: Session, user_id: str):
         user.matricule = f"AEIDC-{year}-{suffix}".upper()
         db.commit()
     return user
->>>>>>> Stashed changes

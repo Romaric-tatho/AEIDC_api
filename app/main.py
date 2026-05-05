@@ -1,8 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
-import app.routers.users as users
-
 
 # Création des tables automatiquement au démarrage
 Base.metadata.create_all(bind=engine)
@@ -12,6 +10,9 @@ app = FastAPI(
     description="Système de gestion des membres et certifications",
     version="1.0.0"
 )
+
+# Inclusion des routes
+
 
 # Configuration CORS pour WordPress
 app.add_middleware(
