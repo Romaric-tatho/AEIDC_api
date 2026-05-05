@@ -7,18 +7,29 @@ from .models import UserRole, DocType
 
 class UserBase(BaseModel):
     email: EmailStr
-    nom: Optional[str] = None
-    prenom: Optional[str] = None
+    nom: str
+    prenom: str
+    pays:str
+    numero_telephone:str
 
 class UserCreate(UserBase):
     password: str  # Le mot de passe brut envoyé lors de l'inscription
 
-class UserUpdate(BaseModel):
+# Ce que l'utilisateur peut modifier lui-même
+class UserUpdateSelf(BaseModel):
     nom: Optional[str] = None
     prenom: Optional[str] = None
-    expertise_domaine: Optional[str] = None
-    poste_bureau: Optional[str] = None
     photo_url: Optional[str] = None
+    pays: Optional[str] = None
+    numero_telephone: Optional[str] = None
+    
+# Ce que l'ADMIN peut modifier (il hérite de tout + les champs sensibles)
+class UserUpdateAdmin(UserUpdateSelf):
+    role: Optional[UserRole] = None
+    poste_bureau: Optional[str] = None
+    expertise_domaine: Optional[str] = None 
+    is_active: Optional[bool] = None
+    matricule: Optional[str] = None
 
 class UserOut(UserBase):
     id: str

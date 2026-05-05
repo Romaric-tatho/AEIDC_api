@@ -2,23 +2,23 @@ from sqlalchemy import Column, String, Boolean, DateTime, Enum, ForeignKey, Floa
 from sqlalchemy.orm import relationship
 from .database import Base
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 import enum
 
 # --- Énumérations pour la cohérence des données ---
 
 class UserRole(str, enum.Enum):
-    SIMPLE = "simple"
-    ETUDIANT = "etudiant"
-    ACTIF = "actif"
-    EXPERT = "expert"
-    BUREAU = "bureau"
-    ADMIN = "admin"
+    SIMPLE = "Membre Simple"
+    ETUDIANT = "Étudiant"
+    ACTIF = "Membre Actif"
+    EXPERT = "Expert"
+    BUREAU = "Membre Exécutif"
+    ADMIN = "Administrateur"
 
 class DocType(str, enum.Enum):
     CARTE_ACTIF = "carte_actif"
     CARTE_EXPERT = "carte_expert"
-    CERTIFICAT = "certificat"
+    CERTIFICAT = "certification"
 
 # --- Tables ---
 
@@ -30,6 +30,8 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     nom = Column(String(100))
     prenom = Column(String(100))
+    pays = Column(String(100))
+    numero_telephone = Column(String(20))
     role = Column(Enum(UserRole), default=UserRole.SIMPLE)
     is_active = Column(Boolean, default=True)
     date_inscription = Column(DateTime, default=datetime.utcnow)
@@ -60,11 +62,12 @@ class Transaction(Base):
 class Document(Base):
     __tablename__ = "documents"
 
+    now = datetime.now(timezone.utc) 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String(36), ForeignKey("users.id"))
     type_doc = Column(Enum(DocType))
     numero_serie = Column(String(100), unique=True) # ex: AEIDC-CERT-2024-XXX
     url_fichier = Column(String(255))
-    date_generation = Column(DateTime, default=datetime.utcnow)
+    date_generation = Column(DateTime, default=now)
 
     owner = relationship("User", back_populates="documents")
