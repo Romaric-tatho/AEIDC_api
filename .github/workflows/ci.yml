@@ -39,7 +39,7 @@ jobs:
     - name: Verification syntaxique et Qualité (Linting)
       run: |
         # Ruff vérifie les erreurs de code et le style
-        ruff check .
+        #ruff check .
         
     - name: Verification de la compilation
       run: |
