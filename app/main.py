@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine, Base
+import app.routers.users as users
 
 
 # Création des tables automatiquement au démarrage
