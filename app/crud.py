@@ -16,29 +16,12 @@ def create_user(db: Session, user: schemas.UserCreate):
         password_hash=hashed_pwd,
         nom=user.nom,
         prenom=user.prenom,
-        pays=user.pays,
-        numero_telephone=user.numero_telephone,
-        role=models.UserRole.SIMPLE,
-        photo_url=user.photo_url
+        role=models.UserRole.SIMPLE  # Par défaut, tout le monde est 'simple'
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
-
-def update_user(db: Session, user_id: str, user_update: schemas.UserUpdateAdmin):
-    """Met à jour les informations d'un utilisateur (admin ou lui-même)"""
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    if not user:
-        return None
-    
-    # Mise à jour des champs modifiables
-    for field, value in user_update.model_dump(exclude_unset=True).items():
-        setattr(user, field, value)
-    
-    db.commit()
-    db.refresh(user)
-    return user
 
 # --- GESTION DES TRANSACTIONS ---
 

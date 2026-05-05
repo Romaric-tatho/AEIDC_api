@@ -1,0 +1,57 @@
+name: Python CI (AEIDC API)
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+jobs:
+  verification:
+    runs-on: ubuntu-latest
+
+    services:
+      # On simule une base MySQL pour que l'API puisse tester la connexion
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: aeidc_db
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - name: Recuperer le code
+      uses: actions/checkout@v4
+    
+    - name: Installer Python 3.12 # Conseil : 3.12 est plus stable pour FastAPI/MySQL actuellement
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Installer les dependances
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install ruff # Outil de vérification pro
+
+    - name: Verification syntaxique et Qualité (Linting)
+      run: |
+        # Ruff vérifie les erreurs de code et le style
+        ruff check .
+        
+    - name: Verification de la compilation
+      run: |
+        python -m compileall .
+
+    - name: Test de démarrage de l'application
+      env:
+        # On passe des variables temporaires pour le test
+        DATABASE_URL: mysql+mysqlconnector://root:root@127.0.0.1:3306/aeidc_db
+        SECRET_KEY: test_secret_key_ci
+        ALGORITHM: HS256
+      run: |
+        # Vérifie si l'API arrive à charger les modèles SQLAlchemy sans erreur
+        python -c "from app.database import engine; from app.models import Base; Base.metadata.create_all(bind=engine)"
+        echo "La structure de la base de données est valide."
